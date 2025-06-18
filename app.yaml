@@ -1,0 +1,11 @@
+# app.yaml
+name: fishai-frontend-only # Asegúrate de que este nombre sea único para tu app en DO
+
+static_sites:
+  - name: fishai-frontend
+    build_command: npm install && npm run build
+    output_dir: build
+    source_dir: client # ¡Esta línea es CRUCIAL! Debe apuntar a la carpeta de tu proyecto React
+    routes:
+      - path: /
+        redirect: /index.html # Redirige todas las rutas a index.html para manejar el enrutamiento del lado del cliente
