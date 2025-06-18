@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { Home, Compass, Fish, Book, Users, LogOut, MapPin, Search } from 'lucide-react'; // Importar iconos de lucide-react
+import { Home, Compass, Fish, Book, Users, LogOut, MapPin, Search, CloudSun, Calendar } from 'lucide-react'; // Importar nuevos iconos
 
 // Componente de la Página de Inicio
 const HomePage = ({ userId }) => (
@@ -25,11 +25,29 @@ const HomePage = ({ userId }) => (
 // Componente de la Página de Búsqueda de Lugares
 const FindSpotsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = () => {
-    // Lógica para iniciar la búsqueda de lugares (placeholder)
+  const handleSearch = async () => {
+    setIsLoading(true);
+    setSearchResults(null); // Limpiar resultados anteriores
     console.log('Buscando lugares para:', searchTerm);
-    // Aquí se integraría la llamada a la API de mapas y el modelo de IA
+
+    // Simulación de llamada a la API de IA para buscar lugares
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simula un retraso de red
+
+    // Datos simulados de respuesta de la IA
+    const mockResults = [
+      { name: "Lago Escondido", type: "Trucha", idealWeather: "Soleado", idealDate: "Verano" },
+      { name: "Río Grande", type: "Salmón", idealWeather: "Nublado, poco viento", idealDate: "Otoño" },
+      { name: "Arroyo Claro", type: "Pejerrey", idealWeather: "Templado", idealDate: "Primavera" },
+    ];
+
+    setSearchResults(mockResults.filter(spot => 
+      spot.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      spot.type.toLowerCase().includes(searchTerm.toLowerCase())
+    ));
+    setIsLoading(false);
   };
 
   return (
@@ -49,13 +67,39 @@ const FindSpotsPage = () => {
         <button
           onClick={handleSearch}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-r-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center"
+          disabled={isLoading}
         >
-          <Search className="inline-block mr-2" size={20} /> Buscar
+          {isLoading ? (
+            <span className="animate-spin h-5 w-5 border-b-2 border-white rounded-full"></span>
+          ) : (
+            <>
+              <Search className="inline-block mr-2" size={20} /> Buscar
+            </>
+          )}
         </button>
       </div>
 
+      {/* Resultados de la búsqueda */}
+      {isLoading && <p className="text-blue-600 mt-4 text-lg">Buscando los mejores lugares...</p>}
+      {searchResults && searchResults.length > 0 && (
+        <div className="mt-8 text-left max-w-2xl mx-auto bg-blue-50 p-6 rounded-xl shadow-lg">
+          <h3 className="text-2xl font-bold text-blue-800 mb-4">Resultados Encontrados:</h3>
+          {searchResults.map((spot, index) => (
+            <div key={index} className="mb-4 p-4 border border-blue-200 rounded-lg bg-white shadow-sm">
+              <p className="text-lg font-semibold text-gray-900">{spot.name}</p>
+              <p className="text-gray-700">Tipo de pesca: {spot.type}</p>
+              <p className="text-gray-700">Clima ideal: {spot.idealWeather}</p>
+              <p className="text-gray-700">Mejor época: {spot.idealDate}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      {searchResults && searchResults.length === 0 && !isLoading && (
+        <p className="text-red-600 mt-4 text-lg">No se encontraron lugares para tu búsqueda.</p>
+      )}
+
       {/* Contenedor del mapa (Placeholder) */}
-      <div className="bg-gray-200 rounded-xl p-8 mt-8 shadow-inner border-2 border-dashed border-gray-400 min-h-[400px] flex items-center justify-center">
+      <div className="bg-gray-200 rounded-xl p-8 mt-8 shadow-inner border-2 border-dashed border-gray-400 min-h-[300px] flex items-center justify-center">
         <p className="text-gray-600 text-lg">
           [Aquí se cargaría el mapa interactivo y se mostrarían los resultados de la búsqueda inteligente con IA.]
           <br />
@@ -66,6 +110,121 @@ const FindSpotsPage = () => {
       <button className="mt-10 bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out text-lg">
         Ver Más Opciones de Lugares
       </button>
+    </div>
+  );
+};
+
+// Nuevo Componente de la Página de Pronóstico
+const ForecastPage = () => {
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState('');
+  const [forecastResult, setForecastResult] = useState(null);
+  const [isLoadingForecast, setIsLoadingForecast] = useState(false);
+
+  const handleGetForecast = async () => {
+    setIsLoadingForecast(true);
+    setForecastResult(null);
+    console.log(`Obteniendo pronóstico para ${location} el ${date}`);
+
+    // Simulación de llamada a la API de IA para pronóstico
+    await new Promise(resolve => setTimeout(resolve, 2500)); // Simula un retraso de red
+
+    // Datos simulados de respuesta de la IA
+    const mockForecasts = [
+      { location: "Bariloche", date: "2025-07-20", weather: "Soleado, 18°C", wind: "Bajo (5-10 km/h)", fishActivity: "Alta", ideal: true, fishType: "Trucha Arcoíris" },
+      { location: "Mar del Plata", date: "2025-08-10", weather: "Nublado, Lluvias ocasionales, 12°C", wind: "Moderado (15-25 km/h)", fishActivity: "Media-Baja", ideal: false, fishType: "Pescadilla" },
+      { location: "Corrientes", date: "2025-09-05", weather: "Parcialmente nublado, 28°C", wind: "Bajo (0-5 km/h)", fishActivity: "Muy Alta", ideal: true, fishType: "Dorado, Surubí" },
+    ];
+
+    const result = mockForecasts.find(f => 
+      f.location.toLowerCase() === location.toLowerCase() && 
+      f.date === date
+    );
+
+    setForecastResult(result || { ideal: false, message: "No hay datos de pronóstico para esta combinación de ubicación/fecha." });
+    setIsLoadingForecast(false);
+  };
+
+  return (
+    <div className="p-6 text-center">
+      <h2 className="text-4xl font-extrabold text-purple-800 mb-6">Pronóstico Detallado de Pesca con IA</h2>
+      <p className="text-xl text-gray-700 mb-8">Obtén las mejores predicciones de clima y actividad de peces.</p>
+
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+        <input
+          type="text"
+          placeholder="Ubicación (Ej: Bariloche)"
+          className="p-3 border border-gray-300 rounded-lg w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+        <input
+          type="date"
+          placeholder="Fecha"
+          className="p-3 border border-gray-300 rounded-lg w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <button
+          onClick={handleGetForecast}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full md:w-auto"
+          disabled={isLoadingForecast || !location || !date}
+        >
+          {isLoadingForecast ? (
+            <span className="animate-spin h-5 w-5 border-b-2 border-white rounded-full"></span>
+          ) : (
+            <>
+              <CloudSun className="inline-block mr-2" size={20} /> Obtener Pronóstico
+            </>
+          )}
+        </button>
+      </div>
+
+      {forecastResult && (
+        <div className={`mt-8 text-left max-w-2xl mx-auto p-6 rounded-xl shadow-lg 
+            ${forecastResult.ideal ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+          <h3 className="text-2xl font-bold mb-4 flex items-center justify-center">
+            {forecastResult.ideal ? (
+              <span className="text-green-700">¡Condiciones Ideales para Pescar! 🎉</span>
+            ) : (
+              <span className="text-red-700">Condiciones no Ideales 🌧️</span>
+            )}
+          </h3>
+          {forecastResult.weather && (
+            <>
+              <p className="text-lg text-gray-800 mb-2">
+                <MapPin className="inline-block mr-2 text-gray-600" size={18} />
+                Ubicación: <span className="font-semibold">{forecastResult.location}</span>
+              </p>
+              <p className="text-lg text-gray-800 mb-2">
+                <Calendar className="inline-block mr-2 text-gray-600" size={18} />
+                Fecha: <span className="font-semibold">{forecastResult.date}</span>
+              </p>
+              <p className="text-lg text-gray-800 mb-2">
+                <CloudSun className="inline-block mr-2 text-gray-600" size={18} />
+                Clima: <span className="font-semibold">{forecastResult.weather}</span>
+              </p>
+              <p className="text-lg text-gray-800 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-2 text-gray-600 lucide lucide-wind"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 1.8L2 22"/><path d="M9.6 4.6A2.5 2.5 0 1 1 7.8 2.8L2 8.5"/><path d="M12.9 6.2A2.5 2.5 0 1 0 14.7 4.4L2 17.7"/></svg>
+                Viento: <span className="font-semibold">{forecastResult.wind}</span>
+              </p>
+              <p className="text-lg text-gray-800 mb-2">
+                <Fish className="inline-block mr-2 text-gray-600" size={18} />
+                Actividad de Peces: <span className="font-semibold">{forecastResult.fishActivity}</span>
+              </p>
+              {forecastResult.fishType && (
+                <p className="text-lg text-gray-800 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-2 text-gray-600 lucide lucide-fish-reel"><path d="M6 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/><path d="M18 16a4 4 0 0 0 0-8v2a2 2 0 0 1-2 2h-4"/><path d="M18 8c-.7 1.3-1.8 2-3 2h-2l-3.3-3.9a1 1 0 0 0-.6-.1C4.8 5.7 3.5 5 2 5c.4 2.8.5 4.8 1 6"/><path d="M2 10c.8 1 1.5 2.5 2 5"/><path d="M6 18c.3-1 .6-2.3 1-3.7"/><path d="M12 10v4"/></svg>
+                  Tipo(s) de pez sugerido: <span className="font-semibold">{forecastResult.fishType}</span>
+                </p>
+              )}
+            </>
+          )}
+          {forecastResult.message && (
+            <p className="text-lg text-red-600 font-semibold">{forecastResult.message}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -95,7 +254,6 @@ function App() {
       // Obtener la configuración de Firebase y el token de autenticación
       const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
       const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-      // Corregido: Usar __initial_auth_token directamente
       const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
 
       // Inicializar la aplicación Firebase
@@ -198,35 +356,14 @@ function App() {
             <Compass className="inline-block mr-2" size={20} />
             Encontrar Lugares
           </button>
-          {/* Puedes añadir más botones para otras secciones aquí, siguiendo el mismo patrón */}
-          {/* <button
+          <button
             className={`text-white py-2 px-4 rounded-full transition-colors duration-300 flex items-center ${currentPage === 'forecast' ? 'bg-blue-800 shadow-md' : 'hover:bg-blue-600'}`}
             onClick={() => setCurrentPage('forecast')}
           >
-            <Fish className="inline-block mr-2" size={20} />
+            <CloudSun className="inline-block mr-2" size={20} />
             Pronóstico
           </button>
-          <button
-            className={`text-white py-2 px-4 rounded-full transition-colors duration-300 flex items-center ${currentPage === 'identify' ? 'bg-blue-800 shadow-md' : 'hover:bg-blue-600'}`}
-            onClick={() => setCurrentPage('identify')}
-          >
-            <Book className="inline-block mr-2" size={20} />
-            Identificar
-          </button>
-          <button
-            className={`text-white py-2 px-4 rounded-full transition-colors duration-300 flex items-center ${currentPage === 'log' ? 'bg-blue-800 shadow-md' : 'hover:bg-blue-600'}`}
-            onClick={() => setCurrentPage('log')}
-          >
-            <LogOut className="inline-block mr-2 rotate-180" size={20} />
-            Mis Capturas
-          </button>
-          <button
-            className={`text-white py-2 px-4 rounded-full transition-colors duration-300 flex items-center ${currentPage === 'community' ? 'bg-blue-800 shadow-md' : 'hover:bg-blue-600'}`}
-            onClick={() => setCurrentPage('community')}
-          >
-            <Users className="inline-block mr-2" size={20} />
-            Comunidad
-          </button> */}
+          {/* Aquí podrías añadir más botones para las otras funcionalidades (Identificación de Especies, Registro de Capturas, Comunidad) */}
         </div>
       </nav>
 
@@ -236,6 +373,7 @@ function App() {
           {/* Renderizado condicional de componentes basado en la página actual */}
           {currentPage === 'home' && <HomePage userId={userId} />}
           {currentPage === 'find-spots' && <FindSpotsPage />}
+          {currentPage === 'forecast' && <ForecastPage />}
           {/* Puedes añadir más lógica para renderizar otros componentes aquí */}
         </div>
       </main>
