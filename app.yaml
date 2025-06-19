@@ -1,28 +1,20 @@
 # app.yaml
-# Especificación de la aplicación para DigitalOcean App Platform (Pila Completa)
+
+# Especificación de la aplicación para DigitalOcean App Platform (Solo Frontend)
 
 # Versión de la especificación
-name: fishai-fullstack
+name: fishai-frontend-app # Cambiado el nombre para reflejar que es solo frontend
 
-services:
-  - name: fishai-backend
-    root_dir: ./ # La raíz de tu backend (donde están index.js, db.js, y package.json del backend)
-    build_command: npm install # Instala las dependencias del backend
-    run_command: npm start # Inicia el servidor Node.js (usando el script "start" de tu package.json raíz)
-    envs:
-      - key: MONGODB_URI
-        scope: RUN_AND_BUILD_TIME
-        value: ${MONGODB_URI} # Se enlazará con la variable de entorno de DO que debes configurar
-      - key: PORT
-        scope: RUN_AND_BUILD_TIME
-        value: 8080 # Puerto en el que tu Express escuchará en DigitalOcean
-    ports:
-      - port: 8080 # Puerto expuesto por el servicio
-    instance_count: 1
-    # Puedes añadir un health check si lo deseas para asegurar que el servicio esté funcionando
-    # health_check:
-    #   http_path: /health # Si tu backend tiene un endpoint de salud
-    #   initial_delay_seconds: 60
+static_sites:
+  - name: fishai-frontend
+    build_command: npm install && npm run build # Instala dependencias y construye la aplicación React
+    output_dir: build # La carpeta de salida de create-react-app
+    source_dir: client # La carpeta donde se encuentra tu proyecto React (client/)
+    routes:
+      - path: /
+        # Redirige todas las rutas a index.html para manejar el enrutamiento del lado del cliente
+        # Esto es crucial para SPAs como React, ya que permite al router de React manejar las rutas.
+        redirect: /index.html
 
 
 static_sites:
