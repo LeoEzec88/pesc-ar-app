@@ -15,15 +15,3 @@ static_sites:
         # Redirige todas las rutas a index.html para manejar el enrutamiento del lado del cliente
         # Esto es crucial para SPAs como React, ya que permite al router de React manejar las rutas.
         redirect: /index.html
-
-
-static_sites:
-  - name: fishai-frontend
-    build_command: npm install && npm run build # Instala dependencias y construye la aplicación React
-    output_dir: build # La carpeta de salida de create-react-app
-    source_dir: client # La carpeta donde se encuentra tu proyecto React (client/)
-    routes:
-      - path: /
-        # Redirige todas las rutas a index.html para manejar el enrutamiento del lado del cliente
-        # Esto es crucial para SPAs como React, ya que permite al router de React manejar las rutas.
-        redirect: /index.html
