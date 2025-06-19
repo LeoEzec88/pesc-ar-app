@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
@@ -6,48 +5,94 @@ import { getFirestore } from 'firebase/firestore';
 import { Home, Compass, Fish, Book, Users, LogOut, MapPin, Search, CloudSun, Calendar } from 'lucide-react'; // Importar nuevos iconos
 
 // Componente de la Página de Inicio
-const HomePage = ({ userId }) => (
-  <div className="p-6 text-center">
-    <h2 className="text-4xl font-extrabold text-blue-800 mb-6">Bienvenido a FishAI</h2>
-    <p className="text-xl text-gray-700 mb-8">Tu compañero inteligente para la aventura de pesca.</p>
-    {userId && <p className="text-base text-gray-500 mt-2">ID de Usuario: {userId}</p>}
-    <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
-      <FeatureCard icon={<Compass className="w-12 h-12 text-blue-600" />} title="Buscar Lugares" description="Encuentra los mejores puntos de pesca cercanos con predicciones de IA." />
-      <FeatureCard icon={<Fish className="w-12 h-12 text-green-600" />} title="Pronóstico de Pesca" description="Predicciones detalladas de actividad de peces, clima y mareas." />
-      <FeatureCard icon={<Book className="w-12 h-12 text-yellow-600" />} title="Identificación de Especies" description="Identifica peces con una foto y accede a información clave y regulaciones." />
-      <FeatureCard icon={<LogOut className="w-12 h-12 text-red-600 rotate-180" />} title="Registro de Capturas" description="Guarda tus capturas, analiza tus estadísticas y mejora tu estrategia." />
-      <FeatureCard icon={<Users className="w-12 h-12 text-purple-600" />} title="Comunidad" description="Conéctate, comparte experiencias y aprende de otros pescadores." />
-      <FeatureCard icon={<MapPin className="w-12 h-12 text-teal-600" />} title="Mapas Interactivos" description="Visualiza tus lugares favoritos y descubre nuevas zonas de pesca." />
+const HomePage = ({ userId }) => {
+  return (
+    <div className="p-6 text-center">
+      <h2 className="text-4xl font-extrabold text-blue-800 mb-6">Bienvenido a FishAI</h2>
+      <p className="text-xl text-gray-700 mb-8">Tu compañero inteligente para la aventura de pesca.</p>
+      {userId && <p className="text-base text-gray-500 mt-2">ID de Usuario: {userId}</p>}
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <FeatureCard icon={<Compass className="w-12 h-12 text-blue-600" />} title="Buscar Lugares" description="Encuentra los mejores puntos de pesca cercanos con predicciones de IA." />
+        <FeatureCard icon={<Fish className="w-12 h-12 text-green-600" />} title="Pronóstico de Pesca" description="Predicciones detalladas de actividad de peces, clima y mareas." />
+        <FeatureCard icon={<Book className="w-12 h-12 text-yellow-600" />} title="Identificación de Especies" description="Identifica peces con una foto y accede a información clave y regulaciones." />
+        <FeatureCard icon={<LogOut className="w-12 h-12 text-red-600 rotate-180" />} title="Registro de Capturas" description="Guarda tus capturas, analiza tus estadísticas y mejora tu estrategia." />
+        <FeatureCard icon={<Users className="w-12 h-12 text-purple-600" />} title="Comunidad" description="Conéctate, comparte experiencias y aprende de otros pescadores." />
+        <FeatureCard icon={<MapPin className="w-12 h-12 text-teal-600" />} title="Mapas Interactivos" description="Visualiza tus lugares favoritos y descubre nuevas zonas de pesca." />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Componente de la Página de Búsqueda de Lugares
 const FindSpotsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSearch = async () => {
     setIsLoading(true);
     setSearchResults(null); // Limpiar resultados anteriores
+    setError(null); // Limpiar errores anteriores
     console.log('Buscando lugares para:', searchTerm);
 
-    // Simulación de llamada a la API de IA para buscar lugares
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simula un retraso de red
+    const prompt = `Suggest 3 top fishing spots for "${searchTerm}" including the main fish type, ideal weather, and ideal season. Provide the response as a JSON array of objects, each with 'name', 'type', 'idealWeather', and 'idealDate' properties.`;
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
-    // Datos simulados de respuesta de la IA
-    const mockResults = [
-      { name: "Lago Escondido", type: "Trucha", idealWeather: "Soleado", idealDate: "Verano" },
-      { name: "Río Grande", type: "Salmón", idealWeather: "Nublado, poco viento", idealDate: "Otoño" },
-      { name: "Arroyo Claro", type: "Pejerrey", idealWeather: "Templado", idealDate: "Primavera" },
-    ];
+    const payload = {
+        contents: chatHistory,
+        generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: "ARRAY",
+                items: {
+                    type: "OBJECT",
+                    properties: {
+                        "name": { "type": "STRING" },
+                        "type": { "type": "STRING" },
+                        "idealWeather": { "type": "STRING" },
+                        "idealDate": { "type": "STRING" }
+                    },
+                    "propertyOrdering": ["name", "type", "idealWeather", "idealDate"]
+                }
+            }
+        }
+    };
 
-    setSearchResults(mockResults.filter(spot => 
-      spot.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      spot.type.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
-    setIsLoading(false);
+    const apiKey = ""; // Canvas will automatically provide the API key
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API error! Status: ${response.status}, Details: ${errorText}`);
+      }
+
+      const result = await response.json();
+      if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+        const json = result.candidates[0].content.parts[0].text;
+        const parsedJson = JSON.parse(json);
+        setSearchResults(parsedJson);
+      } else {
+        setSearchResults([]); // No results found
+        console.warn("Unexpected API response structure or no candidates.");
+      }
+    } catch (err) {
+      console.error("Error calling Gemini API for search:", err);
+      setError(err.message || "Failed to fetch search results from AI.");
+      setSearchResults([]); // Clear results on error
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -81,6 +126,7 @@ const FindSpotsPage = () => {
 
       {/* Resultados de la búsqueda */}
       {isLoading && <p className="text-blue-600 mt-4 text-lg">Buscando los mejores lugares...</p>}
+      {error && <p className="text-red-600 mt-4 text-lg font-semibold border border-red-300 bg-red-50 p-3 rounded-md">Error: {error}</p>}
       {searchResults && searchResults.length > 0 && (
         <div className="mt-8 text-left max-w-2xl mx-auto bg-blue-50 p-6 rounded-xl shadow-lg">
           <h3 className="text-2xl font-bold text-blue-800 mb-4">Resultados Encontrados:</h3>
@@ -94,7 +140,7 @@ const FindSpotsPage = () => {
           ))}
         </div>
       )}
-      {searchResults && searchResults.length === 0 && !isLoading && (
+      {searchResults && searchResults.length === 0 && !isLoading && !error && (
         <p className="text-red-600 mt-4 text-lg">No se encontraron lugares para tu búsqueda.</p>
       )}
 
@@ -120,29 +166,72 @@ const ForecastPage = () => {
   const [date, setDate] = useState('');
   const [forecastResult, setForecastResult] = useState(null);
   const [isLoadingForecast, setIsLoadingForecast] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleGetForecast = async () => {
     setIsLoadingForecast(true);
     setForecastResult(null);
+    setError(null); // Limpiar errores anteriores
     console.log(`Obteniendo pronóstico para ${location} el ${date}`);
 
-    // Simulación de llamada a la API de IA para pronóstico
-    await new Promise(resolve => setTimeout(resolve, 2500)); // Simula un retraso de red
+    const prompt = `Provide a detailed fishing forecast for "${location}" on "${date}". Include weather, wind, fish activity (e.g., Low, Medium, High, Very High), whether conditions are ideal for fishing (boolean), and suggested fish types. Provide the response as a JSON object with 'location', 'date', 'weather', 'wind', 'fishActivity', 'ideal', and 'fishType' properties. If no data, return ideal: false and a message property.`;
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
-    // Datos simulados de respuesta de la IA
-    const mockForecasts = [
-      { location: "Bariloche", date: "2025-07-20", weather: "Soleado, 18°C", wind: "Bajo (5-10 km/h)", fishActivity: "Alta", ideal: true, fishType: "Trucha Arcoíris" },
-      { location: "Mar del Plata", date: "2025-08-10", weather: "Nublado, Lluvias ocasionales, 12°C", wind: "Moderado (15-25 km/h)", fishActivity: "Media-Baja", ideal: false, fishType: "Pescadilla" },
-      { location: "Corrientes", date: "2025-09-05", weather: "Parcialmente nublado, 28°C", wind: "Bajo (0-5 km/h)", fishActivity: "Muy Alta", ideal: true, fishType: "Dorado, Surubí" },
-    ];
+    const payload = {
+        contents: chatHistory,
+        generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: "OBJECT",
+                properties: {
+                    "location": { "type": "STRING" },
+                    "date": { "type": "STRING" },
+                    "weather": { "type": "STRING" },
+                    "wind": { "type": "STRING" },
+                    "fishActivity": { "type": "STRING" },
+                    "ideal": { "type": "BOOLEAN" },
+                    "fishType": { "type": "STRING" },
+                    "message": { "type": "STRING" } // For no data found
+                },
+                "propertyOrdering": ["location", "date", "weather", "wind", "fishActivity", "ideal", "fishType", "message"]
+            }
+        }
+    };
 
-    const result = mockForecasts.find(f => 
-      f.location.toLowerCase() === location.toLowerCase() && 
-      f.date === date
-    );
+    const apiKey = ""; // Canvas will automatically provide the API key
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-    setForecastResult(result || { ideal: false, message: "No hay datos de pronóstico para esta combinación de ubicación/fecha." });
-    setIsLoadingForecast(false);
+    try {
+      const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API error! Status: ${response.status}, Details: ${errorText}`);
+      }
+
+      const result = await response.json();
+      if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+        const json = result.candidates[0].content.parts[0].text;
+        const parsedJson = JSON.parse(json);
+        setForecastResult(parsedJson);
+      } else {
+        setForecastResult({ ideal: false, message: "No se pudo obtener el pronóstico de la IA." });
+        console.warn("Unexpected API response structure or no candidates.");
+      }
+    } catch (err) {
+      console.error("Error calling Gemini API for forecast:", err);
+      setError(err.message || "Failed to fetch forecast from AI.");
+      setForecastResult({ ideal: false, message: "Error al cargar el pronóstico." }); // Set error state for UI
+    } finally {
+      setIsLoadingForecast(false);
+    }
   };
 
   return (
@@ -179,6 +268,9 @@ const ForecastPage = () => {
           )}
         </button>
       </div>
+
+      {isLoadingForecast && <p className="text-blue-600 mt-4 text-lg">Obteniendo pronóstico de la IA...</p>}
+      {error && <p className="text-red-600 mt-4 text-lg font-semibold border border-red-300 bg-red-50 p-3 rounded-md">Error: {error}</p>}
 
       {forecastResult && (
         <div className={`mt-8 text-left max-w-2xl mx-auto p-6 rounded-xl shadow-lg 
