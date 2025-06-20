@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS # Importa Flask-CORS para manejar solicitudes de origen cruzado
 import os
 import json
+import requests # Asegúrate de que requests esté importado
 
 # Inicializa la aplicación Flask
 app = Flask(__name__)
@@ -46,7 +47,7 @@ def handle_query():
 
         # Construir el payload para la API de Gemini
         chat_history = []
-        chat_history.append({"role": "user", "parts": [{"text": user_query}]})
+        chat_history.push({"role": "user", "parts": [{"text": user_query}]})
 
         payload = {
             "contents": chat_history,
@@ -56,11 +57,10 @@ def handle_query():
         }
 
         # URL de la API de Gemini para gemini-2.0-flash
-        api_url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=){api_key}"
+        api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
 
         # Realizar la llamada a la API de Gemini
         # En un entorno de servidor como Flask, usamos requests en lugar de fetch
-        import requests
         response = requests.post(api_url, json=payload)
         response.raise_for_status() # Lanza una excepción para códigos de estado de error (4xx o 5xx)
 
@@ -87,8 +87,5 @@ def handle_query():
         print(f"Error inesperado: {e}")
         return jsonify({"error": f"Un error inesperado ocurrió: {str(e)}"}), 500
 
-# Punto de entrada para la aplicación Flask
-if __name__ == '__main__':
-    # DigitalOcean App Platform usará Gunicorn, pero esto es para pruebas locales.
-    # Escucha en el puerto 8080 como lo espera DigitalOcean App Platform por defecto.
-    app.run(host='0.0.0.0', port=8080)
+# El bloque if __name__ == '__main__': se elimina para que Gunicorn maneje el inicio.
+# La instancia 'app' de Flask está ahora directamente disponible para Gunicorn.
