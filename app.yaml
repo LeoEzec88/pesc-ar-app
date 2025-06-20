@@ -1,9 +1,0 @@
-name: pesc-ar-app
-
-services:
-  - name: web
-    type: web
-    language: python
-    source_dir: .
-    instance_size_slug: basic-xxs
-    instance_count: 1
