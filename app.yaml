@@ -7,22 +7,17 @@ name: fishing-ai-api # Puedes cambiar este nombre
 # Especifica los servicios web para tu aplicación
 services:
   - name: web # Nombre de este servicio web
-    # Tipo de lenguaje o framework; 'python' es auto-detectado si hay un requirements.txt
-    # pero puedes especificarlo si es necesario.
     type: web
-    # **Añadido: Especifica explícitamente que es una aplicación Python**
-    language: python
-    # **Añadido: Especifica directamente el buildpack de Python para evitar la detección de Node.js**
+    # **Importante:** Especifica directamente el buildpack de Python para evitar la detección incorrecta de Node.js.
+    # Usamos la URL completa del buildpack para mayor especificidad.
     buildpacks:
-      - python: latest
+      - url: https://github.com/heroku/heroku-buildpack-python.git
 
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
-    # Si tu código está en un subdirectorio, ajústalo aquí.
     source_dir: .
 
     # Comando que se ejecuta para construir tu aplicación.
     # Para Python, esto suele ser la instalación de las dependencias.
-    # DigitalOcean a menudo lo auto-detecta, pero es bueno ser explícito.
     build_command: pip install -r requirements.txt
 
     # Comando para ejecutar la aplicación una vez construida.
@@ -34,7 +29,6 @@ services:
     run_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
 
     # Puerto HTTP en el que la aplicación escuchará.
-    # DigitalOcean enrutará el tráfico externo a este puerto.
     http_port: 8080
 
     # Rutas que se mapearán a este servicio.
@@ -52,4 +46,3 @@ services:
     # Configuración de recursos (opcional, ajusta según tus necesidades y costos)
     # instance_size_slug: basic-xxs # Por ejemplo, 'basic-xxs' (512MB RAM, 1vCPU)
     # instance_count: 1 # Número de instancias para escalar (para empezar, 1 es suficiente)
-    
