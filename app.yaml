@@ -1,36 +1,9 @@
-# app.yaml
-# Este archivo configura cómo DigitalOcean App Platform desplegará y ejecutará tu aplicación.
-# Asegúrate de que este archivo esté en el directorio raíz de tu proyecto.
-
-# Nombre de la aplicación (se usará en la URL y la UI de DO)
 name: pesc-ar-app
 
-# Especifica los servicios web para tu aplicación
 services:
   - name: web
     type: web
     language: python
     source_dir: .
-    
-    # Comando que se ejecuta para construir tu aplicación
-    build_command: pip install -r requirements.txt
-    
-    # Comando para iniciar tu aplicación Flask con Gunicorn
-    start_command: gunicorn app:app --bind 0.0.0.0:8080 --workers 1
-    
-    # Puerto HTTP en el que la aplicación escuchará
-    http_port: 8080
-    
-    # Rutas que se mapearán a este servicio
-    routes:
-      - path: /
-        preserve_path_prefix: true
-    
-    # Variables de entorno (opcional)
-    # envs:
-    #   - key: GEMINI_API_KEY
-    #     value: "tu_clave_aqui"
-    
-    # Configuración de recursos (opcional)
     instance_size_slug: basic-xxs
     instance_count: 1
