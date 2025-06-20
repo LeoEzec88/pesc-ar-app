@@ -10,6 +10,8 @@ services:
     # Tipo de lenguaje o framework; 'python' es auto-detectado si hay un requirements.txt
     # pero puedes especificarlo si es necesario.
     type: web
+    # **Añadido: Especifica explícitamente que es una aplicación Python**
+    language: python
 
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     # Si tu código está en un subdirectorio, ajústalo aquí.
@@ -47,5 +49,3 @@ services:
     # Configuración de recursos (opcional, ajusta según tus necesidades y costos)
     # instance_size_slug: basic-xxs # Por ejemplo, 'basic-xxs' (512MB RAM, 1vCPU)
     # instance_count: 1 # Número de instancias para escalar (para empezar, 1 es suficiente)
-
-    
