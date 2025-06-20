@@ -21,8 +21,8 @@ services:
     build_command: pip install -r requirements.txt
 
     # **Actualizado:** Usa 'start_command' para definir explícitamente cómo iniciar la aplicación.
-    # Esto reemplaza el uso de un Procfile externo para mayor claridad y control.
-    start_command: python -m gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
+    # Se ha simplificado el comando de gunicorn.
+    start_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
 
     # Puerto HTTP en el que la aplicación escuchará.
     http_port: 8080
