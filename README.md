@@ -8,7 +8,6 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
 - `requirements.txt`: Lista de dependencias de Python.
 - `app.yaml`: Archivo de configuración para DigitalOcean App Platform.
 - `runtime.txt`: Especifica la versión de Python a utilizar en el despliegue.
-- `Procfile`: Define el comando de inicio para el servicio web.
 - `README.md`: Este archivo.
 
 ## Requisitos

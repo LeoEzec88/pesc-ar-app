@@ -8,7 +8,7 @@ name: fishing-ai-api # Puedes cambiar este nombre
 services:
   - name: web # Nombre de este servicio web
     type: web
-    # **Importante:** Especifica directamente el buildpack de Python para evitar la detección incorrecta de Node.js.
+    # Importante: Especifica directamente el buildpack de Python para evitar la detección incorrecta de Node.js.
     # Usamos la URL completa del buildpack para mayor especificidad.
     buildpacks:
       - url: https://github.com/heroku/heroku-buildpack-python.git
@@ -20,13 +20,10 @@ services:
     # Para Python, esto suele ser la instalación de las dependencias.
     build_command: pip install -r requirements.txt
 
-    # Comando para ejecutar la aplicación una vez construida.
-    # Usamos Gunicorn, un servidor WSGI robusto para producción,
-    # junto con gevent para manejo de concurrencia.
-    # ':8080' es el puerto donde Gunicorn escuchará.
-    # 'app:app' indica que Gunicorn debe ejecutar el objeto 'app'
-    # dentro del módulo 'app.py'.
-    
+    # **Actualizado:** Usa 'start_command' para definir explícitamente cómo iniciar la aplicación.
+    # Esto reemplaza el uso de un Procfile externo para mayor claridad y control.
+    start_command: python -m gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
+
     # Puerto HTTP en el que la aplicación escuchará.
     http_port: 8080
 
