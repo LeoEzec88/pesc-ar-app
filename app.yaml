@@ -3,44 +3,32 @@
 # Asegúrate de que este archivo esté en el directorio raíz de tu proyecto.
 
 # Nombre de la aplicación (se usará en la URL y la UI de DO)
-name: pesc-ar-app # Puedes cambiar este nombre
+name: pesc-ar-app
 
 # Especifica los servicios web para tu aplicación
 services:
-  - name: web # Nombre de este servicio web
+  - name: web
     type: web
-    # Especifica explícitamente el lenguaje. El buildpack de Python se inferirá junto con .python-version.
     language: python
-
-    # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     source_dir: .
-
-    # Comando que se ejecuta para construir tu aplicación.
-    # Para Python, esto suele ser la instalación de las dependencias.
+    
+    # Comando que se ejecuta para construir tu aplicación
     build_command: pip install -r requirements.txt
-
-    # Comando para iniciar tu aplicación Flask con Gunicorn.
-    # Esto elimina la necesidad de un Procfile, centralizando la configuración aquí.
-    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:8080 app:app
-
-    # Puerto HTTP en el que la aplicación escuchará.
-    # DigitalOcean App Platform espera que las aplicaciones web escuchen en el puerto 8080.
-    # Asegúrate de que tu aplicación Flask esté configurada para escuchar en este puerto.
-    http_port: 8080
-
-    # Rutas que se mapearán a este servicio.
-    # 'path: /' significa que este servicio manejará todas las rutas base.
+    
+    # Comando para iniciar tu aplicación Flask con Gunicorn
+    # Usar $PORT en lugar de puerto fijo
+    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:$PORT app:app --worker-tmp-dir /dev/shm
+    
+    # Rutas que se mapearán a este servicio
     routes:
       - path: /
-        preserve_path_prefix: true # Mantiene el prefijo de la ruta al redirigir a este servicio.
-
-    # Especifica las variables de entorno para este servicio.
-    # La clave API de Gemini será inyectada automáticamente por el entorno de Canvas.
-    # Si tuvieras otras variables de entorno personalizadas, las definirías aquí.
+        preserve_path_prefix: true
+    
+    # Variables de entorno (opcional)
     # envs:
-    #   - key: MY_CUSTOM_VARIABLE
-    #     value: "some_value"
-
-    # Configuración de recursos (opcional, ajusta según tus necesidades y costos)
-    # instance_size_slug: basic-xxs # Por ejemplo, 'basic-xxs' (512MB RAM, 1vCPU)
-    # instance_count: 1 # Número de instancias para escalar (para empezar, 1 es suficiente)
+    #   - key: GEMINI_API_KEY
+    #     value: "tu_clave_aqui"
+    
+    # Configuración de recursos (opcional)
+    instance_size_slug: basic-xxs
+    instance_count: 1
