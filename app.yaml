@@ -2,7 +2,7 @@
 # Este archivo configura cómo DigitalOcean App Platform desplegará y ejecutará tu aplicación.
 
 # Nombre de la aplicación (se usará en la URL y la UI de DO)
-name: fishing-ai-api # Puedes cambiar este nombre
+name: pesc-ar-app # Puedes cambiar este nombre
 
 # Especifica los servicios web para tu aplicación
 services:
