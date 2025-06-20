@@ -2,21 +2,26 @@
 # Este archivo configura cómo DigitalOcean App Platform desplegará y ejecutará tu aplicación.
 # Asegúrate de que este archivo esté en el directorio raíz de tu proyecto.
 
+# Nombre de la aplicación (se usará en la URL y la UI de DO)
+name: pesc-ar-app # Puedes cambiar este nombre
+
 # Especifica los servicios web para tu aplicación
 services:
   - name: web # Nombre de este servicio web
     type: web
-    # Importante: Revertimos a 'language: python' y el buildpack se inferirá junto con .python-version.
-    # Se eliminó la URL explícita del buildpack para evitar conflictos.
+    # Especifica explícitamente el lenguaje. El buildpack de Python se inferirá junto con .python-version.
     language: python
-   
+
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     source_dir: .
-    # Especifica el archivo de inicio de tu aplicación.
-    # En este caso, 'app:app' significa que tu aplicación Flask está en un archivo llamado 'app.py'
+
     # Comando que se ejecuta para construir tu aplicación.
     # Para Python, esto suele ser la instalación de las dependencias.
     build_command: pip install -r requirements.txt
+
+    # Comando para iniciar tu aplicación Flask con Gunicorn.
+    # Esto elimina la necesidad de un Procfile, centralizando la configuración aquí.
+    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:8080 app:app
 
     # Puerto HTTP en el que la aplicación escuchará.
     # DigitalOcean App Platform espera que las aplicaciones web escuchen en el puerto 8080.
@@ -28,7 +33,7 @@ services:
     routes:
       - path: /
         preserve_path_prefix: true # Mantiene el prefijo de la ruta al redirigir a este servicio.
-   
+
     # Especifica las variables de entorno para este servicio.
     # La clave API de Gemini será inyectada automáticamente por el entorno de Canvas.
     # Si tuvieras otras variables de entorno personalizadas, las definirías aquí.
