@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesca con IA - Tu Asistente de Pesca Inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chat-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-history {
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            background: #e2e8f0;
+            color: #2d3748;
+            margin-right: auto;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .query-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .query-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .features-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .features-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: #e2e8f0;
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .suggestions {
+            margin-top: 15px;
+        }
+
+        .suggestion-btn {
+            background: #e2e8f0;
+            border: 1px solid #cbd5e0;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .status-online {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 2px solid #68d391;
+        }
+
+        .status-offline {
+            background: #fed7d7;
+            color: #c53030;
+            border: 2px solid #fc8181;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="statusIndicator">
+        🔄 Conectando...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎣 Pesca con IA</h1>
+            <p>Tu asistente inteligente para la pesca perfecta</p>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-section">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">💬 Consulta al Experto</h2>
+                <div class="chat-history" id="chatHistory">
+                    <div class="message ai-message">
+                        ¡Hola! Soy tu asistente de pesca con IA. Puedo ayudarte con consejos sobre pesca, mejores ubicaciones, técnicas, equipos y mucho más. ¿En qué puedo ayudarte hoy?
+                    </div>
+                </div>
+                <div class="loading" id="loadingIndicator">
+                    🤖 La IA está pensando...
+                </div>
+                <div class="input-section">
+                    <input 
+                        type="text" 
+                        class="query-input" 
+                        id="queryInput" 
+                        placeholder="Pregunta algo sobre pesca... ej: ¿Cuál es el mejor cebo para truchas?"
+                        maxlength="500"
+                    >
+                    <button class="send-btn" id="sendBtn" onclick="sendQuery()">
+                        Enviar
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <button class="suggestion-btn" onclick="fillSuggestion('¿Cuáles son los mejores lugares para pescar truchas?')">🏞️ Lugares para truchas</button>
+                    <button class="suggestion-btn" onclick="fillSuggestion('¿Qué equipo necesito para pesca en mar?')">🌊 Equipo para mar</button>
+                    <button class="suggestion-btn" onclick="fillSuggestion('¿Cuál es la mejor hora para pescar?')">⏰ Mejor hora</button>
+                    <button class="suggestion-btn" onclick="fillSuggestion('¿Cómo leo las condiciones del clima para pescar?')">🌤️ Clima y pesca</button>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <h2>✨ Características</h2>
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div>
+                        <strong>Consejos Personalizados</strong><br>
+                        Obtén recomendaciones específicas basadas en tu ubicación y preferencias
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🗺️</div>
+                    <div>
+                        <strong>Mejores Ubicaciones</strong><br>
+                        Descubre los spots más productivos para cada tipo de pesca
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎣</div>
+                    <div>
+                        <strong>Técnicas Avanzadas</strong><br>
+                        Aprende nuevas técnicas y mejora tus habilidades de pesca
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌊</div>
+                    <div>
+                        <strong>Condiciones Óptimas</strong><br>
+                        Información sobre clima, mareas y condiciones ideales
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🐟</div>
+                    <div>
+                        <strong>Especies y Cebos</strong><br>
+                        Guía completa sobre peces y los mejores cebos para cada uno
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de la API
+        const API_BASE_URL = window.location.origin; // Usa la misma URL donde está desplegada la app
+        
+        let isLoading = false;
+
+        // Verificar estado del servidor al cargar la página
+        window.addEventListener('load', checkServerStatus);
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/`);
+                if (response.ok) {
+                    updateStatus(true);
+                } else {
+                    updateStatus(false);
+                }
+            } catch (error) {
+                console.error('Error checking server status:', error);
+                updateStatus(false);
+            }
+        }
+
+        function updateStatus(isOnline) {
+            const indicator = document.getElementById('statusIndicator');
+            if (isOnline) {
+                indicator.textContent = '🟢 Conectado';
+                indicator.className = 'status-indicator status-online';
+            } else {
+                indicator.textContent = '🔴 Sin conexión';
+                indicator.className = 'status-indicator status-offline';
+            }
+        }
+
+        function fillSuggestion(suggestion) {
+            document.getElementById('queryInput').value = suggestion;
+            document.getElementById('queryInput').focus();
+        }
+
+        function addMessage(message, isUser = false) {
+            const chatHistory = document.getElementById('chatHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            messageDiv.textContent = message;
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function showError(message) {
+            const chatHistory = document.getElementById('chatHistory');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+            chatHistory.appendChild(errorDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const sendBtn = document.getElementById('sendBtn');
+            const queryInput = document.getElementById('queryInput');
+
+            if (loading) {
+                loadingIndicator.classList.add('active');
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Enviando...';
+                queryInput.disabled = true;
+            } else {
+                loadingIndicator.classList.remove('active');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Enviar';
+                queryInput.disabled = false;
+            }
+        }
+
+        async function sendQuery() {
+            const queryInput = document.getElementById('queryInput');
+            const query = queryInput.value.trim();
+
+            if (!query || isLoading) {
+                return;
+            }
+
+            // Limpiar el input y mostrar el mensaje del usuario
+            queryInput.value = '';
+            addMessage(query, true);
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    addMessage(data.response || 'Lo siento, no pude generar una respuesta.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`No se pudo conectar con el servidor. ${error.message}`);
+                updateStatus(false);
+            } finally {
+                setLoading(false);
+                queryInput.focus();
+            }
+        }
+
+        // Permitir enviar con Enter
+        document.getElementById('queryInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isLoading) {
+                sendQuery();
+            }
+        });
+
+        // Verificar estado del servidor cada 30 segundos
+        setInterval(checkServerStatus, 30000);
+    </script>
+</body>
+</html>
