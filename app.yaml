@@ -8,10 +8,9 @@ name: fishing-ai-api # Puedes cambiar este nombre
 services:
   - name: web # Nombre de este servicio web
     type: web
-    # Importante: Especifica directamente el buildpack de Python para evitar la detección incorrecta de Node.js.
-    # Usamos la URL completa del buildpack para mayor especificidad.
-    buildpacks:
-      - url: https://github.com/heroku/heroku-buildpack-python.git
+    # Importante: Revertimos a 'language: python' y el buildpack se inferirá junto con .python-version.
+    # Se eliminó la URL explícita del buildpack para evitar conflictos.
+    language: python
 
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     source_dir: .
@@ -21,8 +20,8 @@ services:
     build_command: pip install -r requirements.txt
 
     # **Actualizado:** Usa 'start_command' para definir explícitamente cómo iniciar la aplicación.
-    # Se ha simplificado el comando de gunicorn.
-    start_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
+    # Se añadió '--worker-tmp-dir /dev/shm' según la recomendación del log para mejorar la robustez.
+    start_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app --worker-tmp-dir /dev/shm
 
     # Puerto HTTP en el que la aplicación escuchará.
     http_port: 8080
