@@ -9,11 +9,7 @@ services:
     # Importante: Revertimos a 'language: python' y el buildpack se inferirá junto con .python-version.
     # Se eliminó la URL explícita del buildpack para evitar conflictos.
     language: python
-    # Especifica el buildpack que se utilizará para tu aplicación.
-    # En este caso, se utiliza el buildpack de Python.  
-    buildpacks:
-      - url: https://github.com/heroku/heroku-buildpack-python.git
-
+   
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     source_dir: .
     # Especifica el archivo de inicio de tu aplicación.
@@ -32,8 +28,7 @@ services:
     routes:
       - path: /
         preserve_path_prefix: true # Mantiene el prefijo de la ruta al redirigir a este servicio.
-    # Comando que se ejecuta para iniciar tu aplicación.
-    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:8080 app:app
+   
     # Especifica las variables de entorno para este servicio.
     # La clave API de Gemini será inyectada automáticamente por el entorno de Canvas.
     # Si tuvieras otras variables de entorno personalizadas, las definirías aquí.
