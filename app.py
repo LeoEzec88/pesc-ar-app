@@ -23,7 +23,7 @@ def health_check():
     Endpoint de verificación de estado.
     Útil para comprobar si la aplicación está funcionando.
     """
-    return jsonify({"status": "healthy", "message": "API de pesca con IA está funcionando!"})
+    return jsonify({"status": "healthy", "message": "API de pesca con IA funcionando!"})
 
 @app.route('/api/query', methods=['POST'])
 def handle_query():
