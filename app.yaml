@@ -26,8 +26,7 @@ services:
     # ':8080' es el puerto donde Gunicorn escuchará.
     # 'app:app' indica que Gunicorn debe ejecutar el objeto 'app'
     # dentro del módulo 'app.py'.
-    run_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
-
+    
     # Puerto HTTP en el que la aplicación escuchará.
     http_port: 8080
 

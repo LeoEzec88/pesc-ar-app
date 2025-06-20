@@ -8,6 +8,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
 - `requirements.txt`: Lista de dependencias de Python.
 - `app.yaml`: Archivo de configuración para DigitalOcean App Platform.
 - `runtime.txt`: Especifica la versión de Python a utilizar en el despliegue.
+- `Procfile`: Define el comando de inicio para el servicio web.
 - `README.md`: Este archivo.
 
 ## Requisitos
@@ -59,11 +60,11 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     Si aún no lo has hecho, crea un nuevo repositorio en GitHub (por ejemplo, `fishing-api`).
 
 2.  **Sube tus Archivos a GitHub:**
-    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml` y **`runtime.txt`** estén en la raíz de tu repositorio de GitHub.
+    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml`, `runtime.txt` y **`Procfile`** estén en la raíz de tu repositorio de GitHub.
 
     ```bash
     git add .
-    git commit -m "Initial commit for fishing API with runtime.txt"
+    git commit -m "Actualización: Eliminado run_command de app.yaml y añadido Procfile"
     git push origin main # o master, dependiendo de tu rama principal
     ```
 
@@ -82,8 +83,8 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     * DigitalOcean debería detectar automáticamente que es una aplicación Python.
     * **HTTP Port:** Asegúrate de que el puerto HTTP esté configurado en `8080`. Este es el puerto que tu aplicación Flask está escuchando.
     * **Build Command:** Si no se detecta automáticamente, puedes especificarlo (generalmente no es necesario para Python estándar): `pip install -r requirements.txt`
-    * **Run Command:** `gunicorn --worker-class gevent --workers 4 --bind :8080 app:app`
-        * **Nota:** Utilizamos `gunicorn` y `gevent` para un rendimiento más robusto en producción. Asegúrate de que `gunicorn` y `gevent` estén incluidos en tu `requirements.txt`.
+    * **Run Command:** Este campo **no debe configurarse** en la interfaz de usuario de DigitalOcean si estás usando un `Procfile`. El `Procfile` tomará precedencia y definirá el comando de inicio.
+        * **Nota:** Asegúrate de que `gunicorn` y `gevent` estén incluidos en tu `requirements.txt`.
     * **Environment Variables:** No necesitas configurar `API_KEY` aquí, ya que el entorno de Canvas lo maneja automáticamente. Sin embargo, si tuvieras otras variables de entorno (como una URL de base de datos), las añadirías aquí.
 
 6.  **Revisa y Despliega:**
