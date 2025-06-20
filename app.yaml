@@ -16,8 +16,10 @@ services:
     build_command: pip install -r requirements.txt
     
     # Comando para iniciar tu aplicación Flask con Gunicorn
-    # Usar $PORT en lugar de puerto fijo
-    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:$PORT app:app --worker-tmp-dir /dev/shm
+    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:8080 app:app --worker-tmp-dir /dev/shm
+    
+    # Puerto HTTP en el que la aplicación escuchará
+    http_port: 8080
     
     # Rutas que se mapearán a este servicio
     routes:
