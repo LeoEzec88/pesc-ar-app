@@ -7,7 +7,8 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
 - `app.py`: El código principal de la aplicación Flask.
 - `requirements.txt`: Lista de dependencias de Python.
 - `app.yaml`: Archivo de configuración para DigitalOcean App Platform.
-- `runtime.txt`: Especifica la versión de Python a utilizar en el despliegue.
+- `.python-version`: Especifica la versión de Python a utilizar en el despliegue.
+- `Procfile`: Define el comando de inicio para el servicio web.
 - `README.md`: Este archivo.
 
 ## Requisitos
@@ -38,7 +39,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     pip install -r requirements.txt
     ```
 
-4.  **Ejecutar la Aplicación Flask:**
+4.  **Ejecutar la Aplicación Flask (para desarrollo local):**
     ```bash
     python app.py
     ```
@@ -59,11 +60,14 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     Si aún no lo has hecho, crea un nuevo repositorio en GitHub (por ejemplo, `fishing-api`).
 
 2.  **Sube tus Archivos a GitHub:**
-    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml`, `runtime.txt` y **`Procfile`** estén en la raíz de tu repositorio de GitHub.
+    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml`, `.python-version` y el nuevo **`Procfile`** estén en la raíz de tu repositorio de GitHub.
+
+    **Acciones Importantes:**
+    * **Elimina el archivo `runtime.txt`** de tu repositorio si existe.
 
     ```bash
     git add .
-    git commit -m "Actualización: Eliminado run_command de app.yaml y añadido Procfile"
+    git commit -m "Actualización: Reintroducido Procfile y eliminado start_command de app.yaml"
     git push origin main # o master, dependiendo de tu rama principal
     ```
 
@@ -82,7 +86,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     * DigitalOcean debería detectar automáticamente que es una aplicación Python.
     * **HTTP Port:** Asegúrate de que el puerto HTTP esté configurado en `8080`. Este es el puerto que tu aplicación Flask está escuchando.
     * **Build Command:** Si no se detecta automáticamente, puedes especificarlo (generalmente no es necesario para Python estándar): `pip install -r requirements.txt`
-    * **Run Command:** Este campo **no debe configurarse** en la interfaz de usuario de DigitalOcean si estás usando un `Procfile`. El `Procfile` tomará precedencia y definirá el comando de inicio.
+    * **Run Command:** Este campo **NO DEBE CONFIGURARSE** en la interfaz de usuario de DigitalOcean. El `Procfile` se encargará de definir el comando de inicio.
         * **Nota:** Asegúrate de que `gunicorn` y `gevent` estén incluidos en tu `requirements.txt`.
     * **Environment Variables:** No necesitas configurar `API_KEY` aquí, ya que el entorno de Canvas lo maneja automáticamente. Sin embargo, si tuvieras otras variables de entorno (como una URL de base de datos), las añadirías aquí.
 
@@ -126,4 +130,4 @@ async function getFishingAdvice(userQuery) {
 }
 
 // Ejemplo de cómo llamarlo
-// getFishingAdvice("¿Qué equipo necesito para pescar salmón en Alaska?");
+// getFishingAdvice("¿Qué equipo necesito para pescar Pejerrey en Buenos Aires?");
