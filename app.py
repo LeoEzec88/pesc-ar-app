@@ -47,7 +47,8 @@ def handle_query():
 
         # Construir el payload para la API de Gemini
         chat_history = []
-        chat_history.push({"role": "user", "parts": [{"text": user_query}]})
+        # CORRECCIÓN: Se cambió .push() por .append() ya que chat_history es una lista de Python.
+        chat_history.append({"role": "user", "parts": [{"text": user_query}]})
 
         payload = {
             "contents": chat_history,
