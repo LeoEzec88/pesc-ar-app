@@ -7,6 +7,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
 - `app.py`: El código principal de la aplicación Flask.
 - `requirements.txt`: Lista de dependencias de Python.
 - `app.yaml`: Archivo de configuración para DigitalOcean App Platform.
+- `runtime.txt`: Especifica la versión de Python a utilizar en el despliegue.
 - `README.md`: Este archivo.
 
 ## Requisitos
@@ -58,11 +59,11 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     Si aún no lo has hecho, crea un nuevo repositorio en GitHub (por ejemplo, `fishing-api`).
 
 2.  **Sube tus Archivos a GitHub:**
-    Asegúrate de que `app.py`, `requirements.txt` y `app.yaml` estén en la raíz de tu repositorio de GitHub.
+    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml` y **`runtime.txt`** estén en la raíz de tu repositorio de GitHub.
 
     ```bash
     git add .
-    git commit -m "Initial commit for fishing API"
+    git commit -m "Initial commit for fishing API with runtime.txt"
     git push origin main # o master, dependiendo de tu rama principal
     ```
 
