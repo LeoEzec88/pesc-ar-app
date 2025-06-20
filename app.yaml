@@ -1,17 +1,51 @@
 # app.yaml
+# Este archivo configura cómo DigitalOcean App Platform desplegará y ejecutará tu aplicación.
 
-# Especificación de la aplicación para DigitalOcean App Platform (Solo Frontend)
+# Nombre de la aplicación (se usará en la URL y la UI de DO)
+name: fishing-ai-api # Puedes cambiar este nombre
 
-# Versión de la especificación
-name: fishai-frontend-app # Cambiado el nombre para reflejar que es solo frontend
+# Especifica los servicios web para tu aplicación
+services:
+  - name: web # Nombre de este servicio web
+    # Tipo de lenguaje o framework; 'python' es auto-detectado si hay un requirements.txt
+    # pero puedes especificarlo si es necesario.
+    type: web
 
-static_sites:
-  - name: fishai-frontend
-    build_command: npm install && npm run build # Instala dependencias y construye la aplicación React
-    output_dir: build # La carpeta de salida de create-react-app
-    source_dir: client # La carpeta donde se encuentra tu proyecto React (client/)
+    # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
+    # Si tu código está en un subdirectorio, ajústalo aquí.
+    source_dir: .
+
+    # Comando que se ejecuta para construir tu aplicación.
+    # Para Python, esto suele ser la instalación de las dependencias.
+    # DigitalOcean a menudo lo auto-detecta, pero es bueno ser explícito.
+    build_command: pip install -r requirements.txt
+
+    # Comando para ejecutar la aplicación una vez construida.
+    # Usamos Gunicorn, un servidor WSGI robusto para producción,
+    # junto con gevent para manejo de concurrencia.
+    # ':8080' es el puerto donde Gunicorn escuchará.
+    # 'app:app' indica que Gunicorn debe ejecutar el objeto 'app'
+    # dentro del módulo 'app.py'.
+    run_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app
+
+    # Puerto HTTP en el que la aplicación escuchará.
+    # DigitalOcean enrutará el tráfico externo a este puerto.
+    http_port: 8080
+
+    # Rutas que se mapearán a este servicio.
+    # 'path: /' significa que este servicio manejará todas las rutas base.
     routes:
       - path: /
-        # Redirige todas las rutas a index.html para manejar el enrutamiento del lado del cliente
-        # Esto es crucial para SPAs como React, ya que permite al router de React manejar las rutas.
-        redirect: /index.html
+
+    # Especifica las variables de entorno para este servicio.
+    # La clave API de Gemini será inyectada automáticamente por el entorno de Canvas.
+    # Si tuvieras otras variables de entorno personalizadas, las definirías aquí.
+    # envs:
+    #   - key: MY_CUSTOM_VARIABLE
+    #     value: "some_value"
+
+    # Configuración de recursos (opcional, ajusta según tus necesidades y costos)
+    # instance_size_slug: basic-xxs # Por ejemplo, 'basic-xxs' (512MB RAM, 1vCPU)
+    # instance_count: 1 # Número de instancias para escalar (para empezar, 1 es suficiente)
+
+    
