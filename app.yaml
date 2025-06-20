@@ -1,8 +1,6 @@
 # app.yaml
 # Este archivo configura cómo DigitalOcean App Platform desplegará y ejecutará tu aplicación.
-
-# Nombre de la aplicación (se usará en la URL y la UI de DO)
-name: pesc-ar-app # Puedes cambiar este nombre
+# Asegúrate de que este archivo esté en el directorio raíz de tu proyecto.
 
 # Especifica los servicios web para tu aplicación
 services:
@@ -11,22 +9,31 @@ services:
     # Importante: Revertimos a 'language: python' y el buildpack se inferirá junto con .python-version.
     # Se eliminó la URL explícita del buildpack para evitar conflictos.
     language: python
+    # Especifica el buildpack que se utilizará para tu aplicación.
+    # En este caso, se utiliza el buildpack de Python.  
+    buildpacks:
+      - url: https://github.com/heroku/heroku-buildpack-python.git
 
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     source_dir: .
-
+    # Especifica el archivo de inicio de tu aplicación.
+    # En este caso, 'app:app' significa que tu aplicación Flask está en un archivo llamado 'app.py'
     # Comando que se ejecuta para construir tu aplicación.
     # Para Python, esto suele ser la instalación de las dependencias.
     build_command: pip install -r requirements.txt
 
     # Puerto HTTP en el que la aplicación escuchará.
+    # DigitalOcean App Platform espera que las aplicaciones web escuchen en el puerto 8080.
+    # Asegúrate de que tu aplicación Flask esté configurada para escuchar en este puerto.
     http_port: 8080
 
     # Rutas que se mapearán a este servicio.
     # 'path: /' significa que este servicio manejará todas las rutas base.
     routes:
       - path: /
-
+        preserve_path_prefix: true # Mantiene el prefijo de la ruta al redirigir a este servicio.
+    # Comando que se ejecuta para iniciar tu aplicación.
+    start_command: python -m gunicorn --workers 1 --bind 0.0.0.0:8080 app:app
     # Especifica las variables de entorno para este servicio.
     # La clave API de Gemini será inyectada automáticamente por el entorno de Canvas.
     # Si tuvieras otras variables de entorno personalizadas, las definirías aquí.

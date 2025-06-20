@@ -8,7 +8,6 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
 - `requirements.txt`: Lista de dependencias de Python.
 - `app.yaml`: Archivo de configuración para DigitalOcean App Platform.
 - `.python-version`: Especifica la versión de Python a utilizar en el despliegue.
-- `Procfile`: Define el comando de inicio para el servicio web.
 - `README.md`: Este archivo.
 
 ## Requisitos
@@ -60,14 +59,16 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     Si aún no lo has hecho, crea un nuevo repositorio en GitHub (por ejemplo, `fishing-api`).
 
 2.  **Sube tus Archivos a GitHub:**
-    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml`, `.python-version` y el nuevo **`Procfile`** estén en la raíz de tu repositorio de GitHub.
+    Asegúrate de que `app.py`, `requirements.txt`, `app.yaml` y **`.python-version`** estén en la raíz de tu repositorio de GitHub.
 
     **Acciones Importantes:**
     * **Elimina el archivo `runtime.txt`** de tu repositorio si existe.
+    * **Asegúrate de que el archivo `.python-version` contenga solo la versión de Python**, por ejemplo: `3.11`.
+    * **Asegúrate de que no exista un `Procfile`** en la raíz de tu repositorio, ya que el comando de inicio se define ahora en `app.yaml`.
 
     ```bash
     git add .
-    git commit -m "Actualización: Reintroducido Procfile y eliminado start_command de app.yaml"
+    git commit -m "Actualización: app.yaml con buildpack explícito y start_command, sin Procfile"
     git push origin main # o master, dependiendo de tu rama principal
     ```
 
@@ -86,7 +87,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     * DigitalOcean debería detectar automáticamente que es una aplicación Python.
     * **HTTP Port:** Asegúrate de que el puerto HTTP esté configurado en `8080`. Este es el puerto que tu aplicación Flask está escuchando.
     * **Build Command:** Si no se detecta automáticamente, puedes especificarlo (generalmente no es necesario para Python estándar): `pip install -r requirements.txt`
-    * **Run Command:** Este campo **NO DEBE CONFIGURARSE** en la interfaz de usuario de DigitalOcean. El `Procfile` se encargará de definir el comando de inicio.
+    * **Run Command:** Este campo **NO DEBE CONFIGURARSE** en la interfaz de usuario de DigitalOcean, ya que el `start_command` en `app.yaml` lo manejará.
         * **Nota:** Asegúrate de que `gunicorn` y `gevent` estén incluidos en tu `requirements.txt`.
     * **Environment Variables:** No necesitas configurar `API_KEY` aquí, ya que el entorno de Canvas lo maneja automáticamente. Sin embargo, si tuvieras otras variables de entorno (como una URL de base de datos), las añadirías aquí.
 
@@ -95,7 +96,7 @@ Esta es una API backend construida con Flask y Python que utiliza el modelo Gemi
     * Haz clic en "Next" y luego en "Deploy App".
 
 7.  **Accede a tu API:**
-    Una vez que el despliegue sea exitoso, DigitalOcean te proporcionará una URL para tu aplicación (por ejemplo, `https://your-app-name.ondigitalocean.app`). Tu endpoint de API estará en `https://your-app-name.ondigitalocean.app/api/query`.
+    Una vez que el despliegue sea exitoso, DigitalOcean te proporcionará una URL para tu aplicación (por ejemplo, `https://pesc-ar-app.ondigitalocean.app`). Tu endpoint de API estará en `https://pesc-ar-app.ondigitalocean.app/api/query`.
 
 ## Uso de la API
 
@@ -105,7 +106,7 @@ Realiza una solicitud POST a tu endpoint de API con un cuerpo JSON que contenga 
 
 ```javascript
 async function getFishingAdvice(userQuery) {
-    const apiUrl = "[https://your-app-name.ondigitalocean.app/api/query](https://your-app-name.ondigitalocean.app/api/query)"; // ¡Reemplaza con tu URL real!
+    const apiUrl = "[https://pesc-ar-app.ondigitalocean.app/api/query](https://pesc-ar-app.ondigitalocean.app/api/query)"; // ¡Reemplaza con tu URL real!
 
     try {
         const response = await fetch(apiUrl, {
@@ -130,4 +131,4 @@ async function getFishingAdvice(userQuery) {
 }
 
 // Ejemplo de cómo llamarlo
-// getFishingAdvice("¿Qué equipo necesito para pescar Pejerrey en Buenos Aires?");
+// getFishingAdvice("¿Qué equipo necesito para pescar salmón en Alaska?");
