@@ -19,10 +19,6 @@ services:
     # Para Python, esto suele ser la instalación de las dependencias.
     build_command: pip install -r requirements.txt
 
-    # **Actualizado:** Usa 'start_command' para definir explícitamente cómo iniciar la aplicación.
-    # Se añadió '--worker-tmp-dir /dev/shm' según la recomendación del log para mejorar la robustez.
-    start_command: gunicorn --worker-class gevent --workers 4 --bind :8080 app:app --worker-tmp-dir /dev/shm
-
     # Puerto HTTP en el que la aplicación escuchará.
     http_port: 8080
 
