@@ -12,6 +12,9 @@ services:
     type: web
     # **Añadido: Especifica explícitamente que es una aplicación Python**
     language: python
+    # **Añadido: Especifica directamente el buildpack de Python para evitar la detección de Node.js**
+    buildpacks:
+      - python: latest
 
     # Directorio raíz donde se encuentra tu código ( '.' significa el directorio actual)
     # Si tu código está en un subdirectorio, ajústalo aquí.
@@ -49,3 +52,4 @@ services:
     # Configuración de recursos (opcional, ajusta según tus necesidades y costos)
     # instance_size_slug: basic-xxs # Por ejemplo, 'basic-xxs' (512MB RAM, 1vCPU)
     # instance_count: 1 # Número de instancias para escalar (para empezar, 1 es suficiente)
+    
